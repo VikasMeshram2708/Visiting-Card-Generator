@@ -6,11 +6,11 @@ export default function Cta() {
           Ready to Make Your Professional Impression?
         </h2>
         <p className="text-xl text-indigo-200 max-w-2xl mx-auto mb-10">
-          Join thousands of professionals who've enhanced their networking with
-          our AI-designed visiting cards.
+          Join thousands of professionals {"who've"} enhanced their networking
+          with our AI-designed visiting cards.
         </p>
         <button className="bg-white text-indigo-900 px-10 py-4 rounded-lg font-bold hover:bg-indigo-100 transition-colors text-lg">
-          Create Your Card Now - It's Free!
+          Create Your Card Now - {"It's"} Free!
         </button>
       </div>
     </section>

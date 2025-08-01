@@ -1,5 +1,3 @@
-import { IdCard } from "lucide-react";
-
 export function Footer() {
   return (
     <footer className="px-4 py-12 border-t-2 text-white">
