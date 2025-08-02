@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu } from "lucide-react";
+import { CircleUser, Loader2, Menu } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import {
@@ -11,8 +11,22 @@ import {
   SheetTrigger,
 } from "./ui/sheet";
 import { cn } from "@/lib/utils";
+import {
+  LoginLink,
+  LogoutLink,
+  useKindeBrowserClient,
+} from "@kinde-oss/kinde-auth-nextjs";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 export function Navbar() {
+  const { user, isLoading, isAuthenticated } = useKindeBrowserClient();
   const navItems = [
     { name: "Home", href: "/" },
     { name: "Features", href: "/features" },
@@ -59,14 +73,48 @@ export function Navbar() {
         </nav>
 
         {/* Desktop CTA */}
-        <div className="hidden items-center gap-4 md:flex">
-          <Button variant="ghost" asChild>
-            <Link href="/login">Sign In</Link>
-          </Button>
-          <Button asChild>
-            <Link href="/generate">Generate Card</Link>
-          </Button>
-        </div>
+
+        {isLoading ? (
+          <Loader2 className="animate-spin" />
+        ) : (
+          <div className="hidden items-center gap-4 md:flex">
+            {isAuthenticated ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger className="flex items-center gap-2">
+                  <CircleUser className="w-4 h-4" />
+                  {user?.given_name ?? "Anonymous"}
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>Profile</DropdownMenuItem>
+                  <DropdownMenuItem>Billing</DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <LogoutLink>
+                      <span className="text-sm">Logout</span>
+                    </LogoutLink>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button variant="ghost" asChild>
+                <LoginLink>Sign In</LoginLink>
+              </Button>
+            )}
+
+            {isAuthenticated ? (
+              <Button asChild>
+                <Link href="/generate">Generate Card</Link>
+              </Button>
+            ) : (
+              <Button asChild>
+                <LoginLink>
+                  <Link href="/generate">Generate Card</Link>
+                </LoginLink>
+              </Button>
+            )}
+          </div>
+        )}
 
         {/* Mobile Navigation */}
         <Sheet>
@@ -121,7 +169,7 @@ export function Navbar() {
             </div>
             <div className="flex flex-col gap-2 pb-8">
               <Button asChild>
-                <Link href="/login">Sign In</Link>
+                <LoginLink>Login In</LoginLink>
               </Button>
               <Button variant="outline" asChild>
                 <Link href="/generate">Generate Card</Link>
