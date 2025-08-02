@@ -5,7 +5,8 @@ import assert from "node:assert";
 import fs from "fs";
 import path from "node:path";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { checkRateLimit } from "@/utils/rate-limiter";
+import { rateLimit } from "@/utils/rate-limiter";
+import { NextRequest } from "next/server";
 
 // System prompt for visiting card generation
 const VISITING_CARD_PROMPT = `
@@ -46,16 +47,18 @@ const IMAGE_DIR = path.join(process.cwd(), "public/generated");
 
 export async function createDesign(_: unknown, formData: FormData) {
   try {
-    // const { isRateLimited } = await checkRateLimit();
-    //
-    // if (!isRateLimited) {
-    //   return {
-    //     success: false,
-    //     error: "Too many request. Please try again in a minute.",
-    //   };
-    // }
+    const { success, message } = await rateLimit({
+      key: "user",
+      limit: 1,
+      windowInSeconds: 60,
+    });
     const { isAuthenticated } = getKindeServerSession();
-
+    if (!success) {
+      return {
+        success: false,
+        message: message,
+      };
+    }
     if (!(await isAuthenticated())) {
       throw new Error("Unauthorized");
     }

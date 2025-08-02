@@ -1,31 +1,54 @@
-import { LRUCache } from "lru-cache";
-import { headers } from "next/headers";
+import { createClient } from "redis";
 
-const RATE_LIMIT = 10; // 10 requests per minute
-const INTERVAL = 60 * 1000; // 1 minute in ms
+const redis_URL = process.env.REDIS_URL! || "";
 
-const tokenCache = new LRUCache<string, number>({
-  max: 500, // Max unique IPs tracked
-  ttl: INTERVAL,
+export const redisInstance = createClient({
+  url: redis_URL,
 });
 
-export async function checkRateLimit(): Promise<{
-  isRateLimited: boolean;
-  remaining: number;
-  resetTime: number;
-}> {
-  const headersList = await headers(); // Await the headers
-  const ip =
-    headersList.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    headersList.get("x-real-ip") ||
-    "local-dev";
+redisInstance.on("error", (err) => console.error("Redis Client Error", err));
 
-  const tokenCount = tokenCache.get(ip) || 0;
-  tokenCache.set(ip, tokenCount + 1);
+if (!redisInstance.isOpen) {
+  await redisInstance.connect();
+}
+
+// lib/rateLimit.ts
+
+type RateLimitResult = {
+  success: boolean;
+  remaining: number;
+  reset: number;
+  message?: string;
+};
+
+export async function rateLimit({
+  key,
+  limit,
+  windowInSeconds,
+}: {
+  key: string;
+  limit: number;
+  windowInSeconds: number;
+}): Promise<RateLimitResult> {
+  const now = Math.floor(Date.now() / 1000);
+  const keyName = `ratelimit:${key}`;
+
+  const count = await redisInstance.incr(keyName);
+
+  if (count === 1) {
+    await redisInstance.expire(keyName, windowInSeconds); // only set expiry on first hit
+  }
+
+  const ttl = await redisInstance.ttl(keyName);
+  const remaining = Math.max(limit - count, 0);
+  const success = count <= limit;
 
   return {
-    isRateLimited: tokenCount >= RATE_LIMIT,
-    remaining: Math.max(0, RATE_LIMIT - (tokenCount + 1)),
-    resetTime: tokenCache.getRemainingTTL(ip),
+    success,
+    remaining,
+    reset: now + ttl,
+    message: success
+      ? undefined
+      : `Rate limit exceeded. Try again in ${ttl} seconds.`,
   };
 }

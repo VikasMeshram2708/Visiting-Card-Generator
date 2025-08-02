@@ -2,6 +2,7 @@
 
 import { CircleUser, Loader2, Menu } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation"; // Add this import
 import { Button } from "./ui/button";
 import {
   Sheet,
@@ -27,6 +28,8 @@ import {
 
 export function Navbar() {
   const { user, isLoading, isAuthenticated } = useKindeBrowserClient();
+  const pathname = usePathname(); // Get current route
+
   const navItems = [
     { name: "Home", href: "/" },
     { name: "Features", href: "/features" },
@@ -36,11 +39,11 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6 text-primary-foreground"
@@ -65,7 +68,12 @@ export function Navbar() {
             <Link
               key={item.name}
               href={item.href}
-              className="transition-colors text-muted-foreground hover:text-foreground"
+              className={cn(
+                "transition-colors hover:text-foreground",
+                pathname === item.href
+                  ? "text-foreground font-semibold"
+                  : "text-muted-foreground",
+              )}
             >
               {item.name}
             </Link>
@@ -73,7 +81,6 @@ export function Navbar() {
         </nav>
 
         {/* Desktop CTA */}
-
         {isLoading ? (
           <Loader2 className="animate-spin" />
         ) : (
@@ -161,6 +168,9 @@ export function Navbar() {
                   className={cn(
                     "rounded-lg px-4 py-2 text-lg font-medium",
                     "transition-colors hover:bg-accent hover:text-accent-foreground",
+                    pathname === item.href
+                      ? "bg-accent text-accent-foreground"
+                      : "",
                   )}
                 >
                   {item.name}
