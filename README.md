@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# VCARD - Intelligent Visiting Card Platform
 
-## Getting Started
+## Transforming Business Networking
 
-First, run the development server:
+VCARD redefines professional first impressions by merging advanced AI design technology with premium printing services. Our platform enables professionals across India to create distinctive visiting cards that truly represent their brand identity - effortlessly and affordably.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Core Capabilities
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**AI-Driven Design Intelligence**  
+Our system analyzes your profession and preferences to suggest tailored card designs that communicate your professional identity effectively.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Curated Template Collection**  
+Access hundreds of professionally designed templates across industries including finance, healthcare, creative fields, and technology.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Precision Customization Tools**  
+Fine-tune every aspect of your card with our intuitive editor - from font pairings to color psychology-based palettes.
 
-## Learn More
+**Premium Physical Products**  
+Choose from:
 
-To learn more about Next.js, take a look at the following resources:
+- 300-400gsm premium cardstock
+- Matte, glossy, or textured finishes
+- Spot UV or foil stamping options
+- Rounded corner treatments
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Reliable Nationwide Delivery**  
+Cards printed and delivered within:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- 3 business days for metro areas
+- 5 business days for tier 2/3 cities
 
-## Deploy on Vercel
+**Flexible Ordering**  
+Order exactly what you need - from 50 cards for individuals to 10,000+ for corporate teams.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## The VCARD Process
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. **Input Your Professional Details**  
+   Share your contact information, profession, and design preferences.
+
+2. **Receive AI-Generated Concepts**  
+   Get 3-5 complete design variations in under 60 seconds.
+
+3. **Refine Your Design**  
+   Adjust layouts, colors, and typography with our editor.
+
+4. **Digital Proof Approval**  
+   Review a high-resolution preview before printing.
+
+5. **Print & Delivery**  
+   Receive your premium cards at your doorstep.
+
+## Designed For Professionals
+
+- **Entrepreneurs** needing cohesive brand identity
+- **Medical Professionals** requiring compliant designs
+- **Real Estate Agents** wanting memorable leave-behinds
+- **Corporate Teams** seeking standardized branding
+- **Freelancers** building their professional toolkit
+- **Recent Graduates** entering the job market

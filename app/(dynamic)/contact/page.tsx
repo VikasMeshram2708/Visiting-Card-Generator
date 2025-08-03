@@ -41,7 +41,7 @@ export default function ContactPage() {
             Contact Us
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            We'd love to hear from you! Reach out for inquiries, support, or
+            {"We'd"} love to hear from you! Reach out for inquiries, support, or
             partnership opportunities.
           </p>
         </div>
