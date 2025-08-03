@@ -35,7 +35,7 @@ export async function rateLimit({
 
   const count = await redisInstance.incr(keyName);
 
-  if (count === 1) {
+  if (count === 5) {
     await redisInstance.expire(keyName, windowInSeconds); // only set expiry on first hit
   }
 
