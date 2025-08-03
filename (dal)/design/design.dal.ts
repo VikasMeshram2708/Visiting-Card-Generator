@@ -49,7 +49,7 @@ export async function createDesign(_: unknown, formData: FormData) {
   try {
     const { success, message } = await rateLimit({
       key: "user",
-      limit: 1,
+      limit: 5,
       windowInSeconds: 60,
     });
     if (!success) {

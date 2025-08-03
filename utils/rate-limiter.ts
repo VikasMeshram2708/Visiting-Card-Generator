@@ -1,18 +1,14 @@
+// lib/rateLimit.ts
 import { createClient } from "redis";
 
-const redis_URL = process.env.REDIS_URL! || "";
-
-export const redisInstance = createClient({
-  url: redis_URL,
-});
+const redis_URL = process.env.REDIS_URL!;
+export const redisInstance = createClient({ url: redis_URL });
 
 redisInstance.on("error", (err) => console.error("Redis Client Error", err));
 
 if (!redisInstance.isOpen) {
   await redisInstance.connect();
 }
-
-// lib/rateLimit.ts
 
 type RateLimitResult = {
   success: boolean;
@@ -31,24 +27,41 @@ export async function rateLimit({
   windowInSeconds: number;
 }): Promise<RateLimitResult> {
   const now = Math.floor(Date.now() / 1000);
+  const windowStart = now - windowInSeconds;
   const keyName = `ratelimit:${key}`;
 
-  const count = await redisInstance.incr(keyName);
-
-  if (count === 5) {
-    await redisInstance.expire(keyName, windowInSeconds); // only set expiry on first hit
+  // 🚫 Check for bad type (e.g., string instead of zset)
+  const type = await redisInstance.type(keyName);
+  if (type !== "zset" && type !== "none") {
+    await redisInstance.del(keyName); // force reset
   }
 
-  const ttl = await redisInstance.ttl(keyName);
-  const remaining = Math.max(limit - count, 0);
-  const success = count <= limit;
+  // 🧹 Remove outdated entries
+  await redisInstance.zRemRangeByScore(keyName, 0, windowStart);
+
+  // 🔢 Count entries within window
+  const count = await redisInstance.zCard(keyName);
+  const success = count < limit;
+
+  let reset = now + windowInSeconds;
+
+  if (success) {
+    // ✅ Add current timestamp
+    await redisInstance.zAdd(keyName, [{ score: now, value: `${now}` }]);
+    await redisInstance.expire(keyName, windowInSeconds);
+  } else {
+    // ⏱ Get earliest timestamp to compute reset
+    const earliest = await redisInstance.zRangeWithScores(keyName, 0, 0);
+    const firstTime = earliest.length > 0 ? earliest[0].score : now;
+    reset = Math.ceil(firstTime + windowInSeconds);
+  }
 
   return {
     success,
-    remaining,
-    reset: now + ttl,
+    remaining: Math.max(limit - count, 0),
+    reset,
     message: success
       ? undefined
-      : `Rate limit exceeded. Try again in ${ttl} seconds.`,
+      : `Rate limit exceeded. Try again in ${Math.max(reset - now, 0)} seconds.`,
   };
 }
