@@ -1,7 +1,8 @@
 "use client";
 
-import { Menu } from "lucide-react";
+import { CircleUser, Loader2, Menu } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation"; // Add this import
 import { Button } from "./ui/button";
 import {
   Sheet,
@@ -11,8 +12,24 @@ import {
   SheetTrigger,
 } from "./ui/sheet";
 import { cn } from "@/lib/utils";
+import {
+  LoginLink,
+  LogoutLink,
+  useKindeBrowserClient,
+} from "@kinde-oss/kinde-auth-nextjs";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 export function Navbar() {
+  const { user, isLoading, isAuthenticated } = useKindeBrowserClient();
+  const pathname = usePathname(); // Get current route
+
   const navItems = [
     { name: "Home", href: "/" },
     { name: "Features", href: "/features" },
@@ -22,11 +39,11 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+    <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="max-w-screen-xl mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6 text-primary-foreground"
@@ -42,32 +59,71 @@ export function Navbar() {
               />
             </svg>
           </div>
-          <span className="text-lg font-bold">VisitingCard</span>
+          <span className="text-lg font-bold">VCard</span>
         </div>
-
         {/* Desktop Navigation */}
         <nav className="hidden items-center space-x-6 text-sm font-medium md:flex">
           {navItems.map((item) => (
             <Link
               key={item.name}
               href={item.href}
-              className="transition-colors text-muted-foreground hover:text-foreground"
+              className={cn(
+                "transition-colors hover:text-foreground",
+                pathname === item.href
+                  ? "text-foreground font-semibold"
+                  : "text-muted-foreground",
+              )}
             >
               {item.name}
             </Link>
           ))}
         </nav>
-
         {/* Desktop CTA */}
-        <div className="hidden items-center gap-4 md:flex">
-          <Button variant="ghost" asChild>
-            <Link href="/login">Sign In</Link>
-          </Button>
-          <Button asChild>
-            <Link href="/generate">Generate Card</Link>
-          </Button>
-        </div>
+        {isLoading ? (
+          <Loader2 className="animate-spin" />
+        ) : (
+          <div className="hidden items-center gap-4 md:flex">
+            {isAuthenticated ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger className="flex items-center gap-2  px-3 py-2 rounded-2xl border-2 border-r-purple-600 border-l-blue-600 border-t-purple-600 border-b-blue-600">
+                  <CircleUser className="w-4 h-4" />
+                  {user?.given_name ?? "Anonymous"}
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <Link href="/profile">Profile</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link href="/billing">Billing</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <LogoutLink>
+                      <span className="text-sm">Logout</span>
+                    </LogoutLink>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button variant="ghost" asChild>
+                <LoginLink>Sign In</LoginLink>
+              </Button>
+            )}
 
+            {isAuthenticated ? (
+              <Button asChild className="rounded-2xl font-semibold">
+                <Link href="/generate">Generate Card</Link>
+              </Button>
+            ) : (
+              <Button asChild>
+                <LoginLink>
+                  <Link href="/generate">Generate Card</Link>
+                </LoginLink>
+              </Button>
+            )}
+          </div>
+        )}
         {/* Mobile Navigation */}
         <Sheet>
           <SheetTrigger asChild>
@@ -80,7 +136,7 @@ export function Navbar() {
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" className="flex flex-col">
+          <SheetContent side="right" className="flex flex-col p-4 ">
             <SheetHeader>
               <SheetTitle className="hidden"></SheetTitle>
             </SheetHeader>
@@ -113,20 +169,33 @@ export function Navbar() {
                   className={cn(
                     "rounded-lg px-4 py-2 text-lg font-medium",
                     "transition-colors hover:bg-accent hover:text-accent-foreground",
+                    pathname === item.href
+                      ? "bg-accent text-accent-foreground"
+                      : "",
                   )}
                 >
                   {item.name}
                 </Link>
               ))}
             </div>
-            <div className="flex flex-col gap-2 pb-8">
-              <Button asChild>
-                <Link href="/login">Sign In</Link>
+            {isLoading ? (
+              <Loader2 className="animate-spin" />
+            ) : isAuthenticated ? (
+              <Button>
+                <Link href="/profile" className="flex items-center gap-2">
+                  <CircleUser /> {user?.given_name || "Anonymous"}
+                </Link>
               </Button>
-              <Button variant="outline" asChild>
-                <Link href="/generate">Generate Card</Link>
-              </Button>
-            </div>
+            ) : (
+              <div className="flex flex-col gap-2 pb-8">
+                <Button asChild>
+                  <LoginLink>Login In</LoginLink>
+                </Button>
+                <Button variant="outline" asChild>
+                  <Link href="/generate">Generate Card</Link>
+                </Button>
+              </div>
+            )}
           </SheetContent>
         </Sheet>
       </div>

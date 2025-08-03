@@ -1,5 +1,3 @@
-import { IdCard } from "lucide-react";
-
 export function Footer() {
   return (
     <footer className="px-4 py-12 border-t-2 text-white">
@@ -7,7 +5,7 @@ export function Footer() {
         <div className="flex flex-col md:flex-row justify-between">
           <div className="mb-8 md:mb-0">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5 text-white"
@@ -23,7 +21,7 @@ export function Footer() {
                   />
                 </svg>
               </div>
-              <span className="text-xl font-bold">VisitingCard</span>
+              <span className="text-xl font-bold">VCard</span>
             </div>
             <p className="text-gray-400 max-w-xs">
               AI-powered visiting card design and printing service for
