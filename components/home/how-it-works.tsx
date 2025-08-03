@@ -10,7 +10,7 @@ export default function HowItWorks() {
         </p>
 
         <div className="grid md:grid-cols-3 gap-10">
-          <div className="bg-indigo-50 p-8 rounded-xl">
+          <div className="bg-indigo-50 p-8 rounded-2xl">
             <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-6">
               <span className="text-2xl font-bold text-indigo-600">1</span>
             </div>
@@ -23,7 +23,7 @@ export default function HowItWorks() {
             </p>
           </div>
 
-          <div className="bg-indigo-50 p-8 rounded-xl">
+          <div className="bg-indigo-50 p-8 rounded-2xl">
             <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-6">
               <span className="text-2xl font-bold text-indigo-600">2</span>
             </div>
@@ -36,7 +36,7 @@ export default function HowItWorks() {
             </p>
           </div>
 
-          <div className="bg-indigo-50 p-8 rounded-xl">
+          <div className="bg-indigo-50 p-8 rounded-2xl">
             <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-6">
               <span className="text-2xl font-bold text-indigo-600">3</span>
             </div>

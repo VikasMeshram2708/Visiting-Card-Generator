@@ -21,7 +21,7 @@ export function Footer() {
                   />
                 </svg>
               </div>
-              <span className="text-xl font-bold">VisitingCard</span>
+              <span className="text-xl font-bold">VCard</span>
             </div>
             <p className="text-gray-400 max-w-xs">
               AI-powered visiting card design and printing service for
