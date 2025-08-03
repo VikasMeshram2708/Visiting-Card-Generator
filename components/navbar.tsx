@@ -2,7 +2,7 @@
 
 import { CircleUser, Loader2, Menu } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation"; // Add this import
+import { usePathname } from "next/navigation";
 import { Button } from "./ui/button";
 import {
   Sheet,
@@ -13,11 +13,6 @@ import {
 } from "./ui/sheet";
 import { cn } from "@/lib/utils";
 import {
-  LoginLink,
-  LogoutLink,
-  useKindeBrowserClient,
-} from "@kinde-oss/kinde-auth-nextjs";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -25,10 +20,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignOutButton,
+  useAuth,
+  useUser,
+} from "@clerk/nextjs";
 
 export function Navbar() {
-  const { user, isLoading, isAuthenticated } = useKindeBrowserClient();
-  const pathname = usePathname(); // Get current route
+  const { user } = useUser();
+  const { isLoaded } = useAuth();
+  const pathname = usePathname();
 
   const navItems = [
     { name: "Home", href: "/" },
@@ -61,6 +65,7 @@ export function Navbar() {
           </div>
           <span className="text-lg font-bold">VCard</span>
         </div>
+
         {/* Desktop Navigation */}
         <nav className="hidden items-center space-x-6 text-sm font-medium md:flex">
           {navItems.map((item) => (
@@ -78,16 +83,19 @@ export function Navbar() {
             </Link>
           ))}
         </nav>
-        {/* Desktop CTA */}
-        {isLoading ? (
-          <Loader2 className="animate-spin" />
+
+        {/* Desktop Actions */}
+        {!isLoaded ? (
+          <div className="hidden md:flex items-center justify-center w-20">
+            <Loader2 className="animate-spin w-5 h-5 text-muted-foreground" />
+          </div>
         ) : (
           <div className="hidden items-center gap-4 md:flex">
-            {isAuthenticated ? (
+            <SignedIn>
               <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-2  px-3 py-2 rounded-2xl border-2 border-r-purple-600 border-l-blue-600 border-t-purple-600 border-b-blue-600">
+                <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-2 rounded-2xl border-2 border-r-purple-600 border-l-blue-600 border-t-purple-600 border-b-blue-600">
                   <CircleUser className="w-4 h-4" />
-                  {user?.given_name ?? "Anonymous"}
+                  {user?.fullName ?? "Anonymous"}
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
@@ -98,32 +106,27 @@ export function Navbar() {
                   <DropdownMenuItem>
                     <Link href="/billing">Billing</Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <LogoutLink>
+                  <DropdownMenuItem asChild>
+                    <SignOutButton>
                       <span className="text-sm">Logout</span>
-                    </LogoutLink>
+                    </SignOutButton>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            ) : (
-              <Button variant="ghost" asChild>
-                <LoginLink>Sign In</LoginLink>
-              </Button>
-            )}
 
-            {isAuthenticated ? (
               <Button asChild className="rounded-2xl font-semibold">
                 <Link href="/generate">Generate Card</Link>
               </Button>
-            ) : (
-              <Button asChild>
-                <LoginLink>
-                  <Link href="/generate">Generate Card</Link>
-                </LoginLink>
-              </Button>
-            )}
+            </SignedIn>
+
+            <SignedOut>
+              <SignInButton>
+                <Button className="rounded-2xl font-semibold">Sign In</Button>
+              </SignInButton>
+            </SignedOut>
           </div>
         )}
+
         {/* Mobile Navigation */}
         <Sheet>
           <SheetTrigger asChild>
@@ -136,10 +139,12 @@ export function Navbar() {
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" className="flex flex-col p-4 ">
+          <SheetContent side="right" className="flex flex-col p-4">
             <SheetHeader>
-              <SheetTitle className="hidden"></SheetTitle>
+              <SheetTitle />
             </SheetHeader>
+
+            {/* Mobile Logo */}
             <div className="flex h-16 items-center">
               <div className="flex items-center gap-2">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
@@ -161,6 +166,8 @@ export function Navbar() {
                 <span className="text-lg font-bold">VisitingCard</span>
               </div>
             </div>
+
+            {/* Mobile Links */}
             <div className="flex flex-1 flex-col gap-4 py-8">
               {navItems.map((item) => (
                 <Link
@@ -178,24 +185,30 @@ export function Navbar() {
                 </Link>
               ))}
             </div>
-            {isLoading ? (
-              <Loader2 className="animate-spin" />
-            ) : isAuthenticated ? (
-              <Button>
-                <Link href="/profile" className="flex items-center gap-2">
-                  <CircleUser /> {user?.given_name || "Anonymous"}
-                </Link>
-              </Button>
-            ) : (
-              <div className="flex flex-col gap-2 pb-8">
-                <Button asChild>
-                  <LoginLink>Login In</LoginLink>
-                </Button>
-                <Button variant="outline" asChild>
-                  <Link href="/generate">Generate Card</Link>
-                </Button>
-              </div>
-            )}
+
+            {/* Mobile CTA */}
+            <div className="pb-8">
+              <SignedIn>
+                <div className="flex flex-col gap-2">
+                  <Link href="/profile" className="flex items-center gap-2">
+                    <CircleUser /> {user?.fullName || "Anonymous"}
+                  </Link>
+                  <Button asChild variant="outline">
+                    <Link href="/generate">Generate Card</Link>
+                  </Button>
+                </div>
+              </SignedIn>
+              <SignedOut>
+                <div className="flex flex-col gap-2">
+                  <SignInButton>
+                    <Button>Sign In</Button>
+                  </SignInButton>
+                  <Button asChild variant="outline">
+                    <Link href="/generate">Generate Card</Link>
+                  </Button>
+                </div>
+              </SignedOut>
+            </div>
           </SheetContent>
         </Sheet>
       </div>

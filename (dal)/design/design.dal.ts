@@ -4,7 +4,7 @@ import { GoogleGenAI, Modality } from "@google/genai";
 import assert from "node:assert";
 import fs from "fs";
 import path from "node:path";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { rateLimit } from "@/utils/rate-limiter";
 import { NextRequest } from "next/server";
 
@@ -52,14 +52,14 @@ export async function createDesign(_: unknown, formData: FormData) {
       limit: 1,
       windowInSeconds: 60,
     });
-    const { isAuthenticated } = getKindeServerSession();
     if (!success) {
       return {
         success: false,
         message: message,
       };
     }
-    if (!(await isAuthenticated())) {
+    const { isAuthenticated } = await auth();
+    if (!isAuthenticated) {
       throw new Error("Unauthorized");
     }
     const userInput = formData.get("message")?.toString() || "";
