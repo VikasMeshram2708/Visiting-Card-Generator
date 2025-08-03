@@ -8,17 +8,28 @@ import Image from "next/image";
 
 export default function GenerateForm() {
   const [state, action, isPending] = useActionState(createDesign, null);
-
   const handleDownload = () => {
     if (!state?.imageData) return;
+
     const link = document.createElement("a");
     link.href = state.imageData;
     link.download = `visiting-card-${Date.now()}.png`;
+    link.type = "image/png";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
+  // const handleDownload = () => {
+  //   if (!state?.imageData) return;
+  //   const link = document.createElement("a");
+  //   link.href = state.imageData;
+  //   link.download = `visiting-card-${Date.now()}.png`;
+  //   document.body.appendChild(link);
+  //   link.click();
+  //   document.body.removeChild(link);
+  // };
+  //
   return (
     <div className="space-y-6">
       {/* Image Preview */}
