@@ -11,15 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Check,
-  ChevronUp,
-  CreditCard,
-  Loader2,
-  Zap,
-  Sparkles,
-  Briefcase,
-} from "lucide-react";
+import { Check, CreditCard, Loader2, Zap } from "lucide-react";
 
 export default function BillingPage() {
   const currentPlan = {

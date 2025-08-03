@@ -4,6 +4,7 @@ import { createDesign } from "@/(dal)/design/design.dal";
 import { Download, Loader2, Zap } from "lucide-react";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
+import Image from "next/image";
 
 export default function GenerateForm() {
   const [state, action, isPending] = useActionState(createDesign, null);
@@ -24,7 +25,8 @@ export default function GenerateForm() {
       {state?.imageData && (
         <div className="border rounded-lg p-4 bg-white">
           <div className="relative w-full h-64">
-            <img
+            <Image
+              fill
               src={state.imageData}
               alt="Generated visiting card"
               className="object-contain w-full h-full"
