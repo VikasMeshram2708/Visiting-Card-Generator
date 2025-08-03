@@ -57,3 +57,12 @@ Order exactly what you need - from 50 cards for individuals to 10,000+ for corpo
 - **Corporate Teams** seeking standardized branding
 - **Freelancers** building their professional toolkit
 - **Recent Graduates** entering the job market
+
+## Sample Details
+
+4k ultra realistic visiting card
+witht these followihgn detaild imprinted on it
+Name: Vikas Meshram
+Business: Mobile Retailer
+Phone: +91 9898989898
+Address: Gondia, India 441614

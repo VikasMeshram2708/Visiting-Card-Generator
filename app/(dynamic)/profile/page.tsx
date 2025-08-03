@@ -13,11 +13,27 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, ChevronUp, Mail, PencilLine } from "lucide-react";
-import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+import {
+  Calendar,
+  Clock,
+  ChevronUp,
+  Mail,
+  PencilLine,
+  Loader2,
+} from "lucide-react";
+import { useUser } from "@clerk/nextjs";
 
 export default function ProfilePage() {
-  const { isAuthenticated, user } = useKindeBrowserClient();
+  const { isLoaded, user } = useUser();
+
+  if (!isLoaded) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col md:flex-row gap-6 p-4 md:p-6 max-w-screen-xl mx-auto">
       {/* Left Sidebar */}
@@ -26,22 +42,19 @@ export default function ProfilePage() {
           <CardContent className="p-6 space-y-6">
             <div className="flex flex-col items-center space-y-4">
               <Avatar className="h-32 w-32 border-4 border-primary/10">
-                {isAuthenticated && user?.picture ? (
-                  <AvatarImage src={user.picture} />
-                ) : (
-                  <AvatarImage src="/avatars/01.png" />
-                )}
+                <AvatarImage src={user?.imageUrl || "/avatars/01.png"} />
                 <AvatarFallback className="bg-primary/10 text-2xl font-medium uppercase">
-                  {user?.given_name?.charAt(0) || "U"}
+                  {user?.firstName?.charAt(0) || "U"}
                 </AvatarFallback>
               </Avatar>
               <div className="text-center space-y-1">
                 <h2 className="text-2xl font-semibold tracking-tight">
-                  {user?.given_name || "Anonymous"}{" "}
+                  {user?.firstName || "Anonymous"}
                 </h2>
                 <p className="text-muted-foreground flex items-center justify-center gap-1">
                   <Mail className="h-4 w-4" />
-                  {user?.email || "email id"}
+                  {user?.primaryEmailAddress?.emailAddress ||
+                    "email not available"}
                 </p>
               </div>
               <Badge
@@ -72,9 +85,6 @@ export default function ProfilePage() {
               Upgrade Plan
             </Button>
           </CardContent>
-          {/* <div className="text-center text-xs text-muted-foreground pt-2"> */}
-          {/*   Made with ❣️ v0.0.1 */}
-          {/* </div> */}
         </Card>
       </div>
 
@@ -96,7 +106,7 @@ export default function ProfilePage() {
                 <Label htmlFor="firstName">First Name</Label>
                 <Input
                   id="firstName"
-                  defaultValue="John"
+                  defaultValue={user?.firstName || ""}
                   className="bg-background"
                 />
               </div>
@@ -104,7 +114,7 @@ export default function ProfilePage() {
                 <Label htmlFor="lastName">Last Name</Label>
                 <Input
                   id="lastName"
-                  defaultValue="Peterson"
+                  defaultValue={user?.lastName || ""}
                   className="bg-background"
                 />
               </div>
@@ -118,7 +128,7 @@ export default function ProfilePage() {
                 readOnly
                 id="email"
                 type="email"
-                defaultValue="john@example.com"
+                defaultValue={user?.primaryEmailAddress?.emailAddress || ""}
                 className="bg-background cursor-not-allowed"
                 onFocus={(e) => e.target.blur()}
                 tabIndex={-1}
