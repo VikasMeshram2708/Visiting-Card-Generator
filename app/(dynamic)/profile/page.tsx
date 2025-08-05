@@ -21,7 +21,7 @@ import {
   PencilLine,
   Loader2,
 } from "lucide-react";
-import { getSession, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 
 export default function ProfilePage() {
   const { data, status } = useSession();
