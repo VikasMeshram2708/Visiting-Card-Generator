@@ -2,8 +2,9 @@
 
 import { GoogleGenAI, Modality } from "@google/genai";
 import assert from "node:assert";
-import { currentUser } from "@clerk/nextjs/server";
 import { rateLimit } from "@/utils/rate-limiter";
+import { getSession } from "next-auth/react";
+import { getServerSession } from "next-auth";
 
 // Prompt for Gemini
 const VISITING_CARD_PROMPT = `
@@ -42,12 +43,13 @@ Corporate visiting card, ultra-detailed, 8k, studio lighting, minimalist, profes
 
 export async function createDesign(_: unknown, formData: FormData) {
   try {
-    const user = await currentUser();
-    if (!user) throw new Error("Unauthorized");
+    const session = await getServerSession();
+    console.log("session", session);
+    if (!session) throw new Error("Unauthorized");
 
     // Rate limiting: 5 requests per minute per user
     const { success, message, remaining, reset } = await rateLimit({
-      key: `user:${user.id}`,
+      key: `user:${session?.user?.email}`,
       limit: 5,
       windowInSeconds: 60,
     });

@@ -20,20 +20,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  SignOutButton,
-  useAuth,
-  useUser,
-} from "@clerk/nextjs";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 export function Navbar() {
-  const { user } = useUser();
-  const { isLoaded } = useAuth();
+  const { data, status } = useSession();
   const pathname = usePathname();
-
   const navItems = [
     { name: "Home", href: "/" },
     { name: "Features", href: "/features" },
@@ -85,45 +76,51 @@ export function Navbar() {
         </nav>
 
         {/* Desktop Actions */}
-        {!isLoaded ? (
+        {status === "loading" ? (
           <div className="hidden md:flex items-center justify-center w-20">
             <Loader2 className="animate-spin w-5 h-5 text-muted-foreground" />
           </div>
+        ) : data ? (
+          <div className="hidden items-center gap-4 md:flex">
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-2 rounded-2xl border-2 border-r-purple-600 border-l-blue-600 border-t-purple-600 border-b-blue-600">
+                <CircleUser className="w-4 h-4" />
+                {data.user?.name ?? "Anonymous"}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <Link href="/profile">Profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link href="/billing">Billing</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Button
+                    variant={"outline"}
+                    type="button"
+                    onClick={() => signOut()}
+                  >
+                    <span className="text-sm">Logout</span>
+                  </Button>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Button asChild className="rounded-2xl font-semibold">
+              <Link href="/generate">Generate Card</Link>
+            </Button>
+          </div>
         ) : (
           <div className="hidden items-center gap-4 md:flex">
-            <SignedIn>
-              <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-2 rounded-2xl border-2 border-r-purple-600 border-l-blue-600 border-t-purple-600 border-b-blue-600">
-                  <CircleUser className="w-4 h-4" />
-                  {user?.fullName ?? "Anonymous"}
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Link href="/profile">Profile</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Link href="/billing">Billing</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <SignOutButton>
-                      <span className="text-sm">Logout</span>
-                    </SignOutButton>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              <Button asChild className="rounded-2xl font-semibold">
-                <Link href="/generate">Generate Card</Link>
-              </Button>
-            </SignedIn>
-
-            <SignedOut>
-              <SignInButton>
-                <Button className="rounded-2xl font-semibold">Sign In</Button>
-              </SignInButton>
-            </SignedOut>
+            <Button
+              className="rounded-2xl font-semibold"
+              type="button"
+              onClick={() => signIn("google")}
+            >
+              Sign In
+            </Button>
           </div>
         )}
 
@@ -188,26 +185,28 @@ export function Navbar() {
 
             {/* Mobile CTA */}
             <div className="pb-8">
-              <SignedIn>
+              {data ? (
                 <div className="flex flex-col gap-2">
                   <Link href="/profile" className="flex items-center gap-2">
-                    <CircleUser /> {user?.fullName || "Anonymous"}
+                    <CircleUser /> {data.user?.name || "Anonymous"}
                   </Link>
                   <Button asChild variant="outline">
                     <Link href="/generate">Generate Card</Link>
                   </Button>
+                  <Button variant="outline" onClick={() => signOut()}>
+                    Sign Out
+                  </Button>
                 </div>
-              </SignedIn>
-              <SignedOut>
+              ) : (
                 <div className="flex flex-col gap-2">
-                  <SignInButton>
-                    <Button>Sign In</Button>
-                  </SignInButton>
+                  <Button type="button" onClick={() => signIn("google")}>
+                    Sign In
+                  </Button>
                   <Button asChild variant="outline">
                     <Link href="/generate">Generate Card</Link>
                   </Button>
                 </div>
-              </SignedOut>
+              )}
             </div>
           </SheetContent>
         </Sheet>
