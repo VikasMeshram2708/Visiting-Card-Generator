@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Hero() {
   return (
     <section className="px-4 py-16 max-w-screen-xl mx-auto">
@@ -14,7 +16,7 @@ export default function Hero() {
           </p>
           <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
             <button className="bg-indigo-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors text-lg">
-              Generate Your Card
+              <Link href="/generate">Generate Your Card</Link>
             </button>
             <button className="border-2 border-indigo-600 text-indigo-600 px-8 py-3 rounded-lg font-medium hover:bg-indigo-50 transition-colors text-lg">
               See Examples

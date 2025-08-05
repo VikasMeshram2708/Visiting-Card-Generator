@@ -21,12 +21,12 @@ import {
   PencilLine,
   Loader2,
 } from "lucide-react";
-import { useUser } from "@clerk/nextjs";
+import { useSession } from "next-auth/react";
 
 export default function ProfilePage() {
-  const { isLoaded, user } = useUser();
+  const { data, status } = useSession();
 
-  if (!isLoaded) {
+  if (status === "loading") {
     return (
       <div className="w-full h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -42,19 +42,18 @@ export default function ProfilePage() {
           <CardContent className="p-6 space-y-6">
             <div className="flex flex-col items-center space-y-4">
               <Avatar className="h-32 w-32 border-4 border-primary/10">
-                <AvatarImage src={user?.imageUrl || "/avatars/01.png"} />
+                <AvatarImage src={data?.user?.image || "/avatars/01.png"} />
                 <AvatarFallback className="bg-primary/10 text-2xl font-medium uppercase">
-                  {user?.firstName?.charAt(0) || "U"}
+                  {data?.user?.name?.charAt(0) || "U"}
                 </AvatarFallback>
               </Avatar>
               <div className="text-center space-y-1">
                 <h2 className="text-2xl font-semibold tracking-tight">
-                  {user?.firstName || "Anonymous"}
+                  {data?.user?.name || "Anonymous"}
                 </h2>
                 <p className="text-muted-foreground flex items-center justify-center gap-1">
                   <Mail className="h-4 w-4" />
-                  {user?.primaryEmailAddress?.emailAddress ||
-                    "email not available"}
+                  {data?.user?.email || "email not available"}
                 </p>
               </div>
               <Badge
@@ -101,21 +100,13 @@ export default function ProfilePage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="">
               <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
+                <Label htmlFor="firstName">Name</Label>
                 <Input
                   id="firstName"
-                  defaultValue={user?.firstName || ""}
-                  className="bg-background"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
-                <Input
-                  id="lastName"
-                  defaultValue={user?.lastName || ""}
-                  className="bg-background"
+                  defaultValue={data?.user?.name || ""}
+                  className="bg-background w-full"
                 />
               </div>
             </div>
@@ -128,7 +119,7 @@ export default function ProfilePage() {
                 readOnly
                 id="email"
                 type="email"
-                defaultValue={user?.primaryEmailAddress?.emailAddress || ""}
+                defaultValue={data?.user?.email || ""}
                 className="bg-background cursor-not-allowed"
                 onFocus={(e) => e.target.blur()}
                 tabIndex={-1}
