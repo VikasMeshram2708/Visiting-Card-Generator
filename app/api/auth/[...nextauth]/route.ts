@@ -2,9 +2,6 @@ import prisma from "@/utils/prisma";
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
-// const gcid =
-//   "178188105037-u3fr9eivk2oaajfcn2h7pq4ftp6rmvjg.apps.googleusercontent.com";
-// const secret = "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";
 const { GOOGLE_ID, GOOGLE_SECRET, AUTH_SECRET } = process.env;
 if (!GOOGLE_ID || !GOOGLE_SECRET || !AUTH_SECRET) {
   throw new Error("Env variables missing");
