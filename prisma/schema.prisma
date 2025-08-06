@@ -29,6 +29,7 @@ model Contact {
   subject String
   email   String
   message String
+  name    String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
