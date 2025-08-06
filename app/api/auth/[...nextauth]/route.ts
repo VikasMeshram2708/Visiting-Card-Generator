@@ -1,6 +1,8 @@
+import { LoginFB } from "@/lib/mailer";
 import prisma from "@/utils/prisma";
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import assert from "node:assert";
 
 const { GOOGLE_ID, GOOGLE_SECRET, AUTH_SECRET } = process.env;
 if (!GOOGLE_ID || !GOOGLE_SECRET || !AUTH_SECRET) {
@@ -35,6 +37,7 @@ const handler = NextAuth({
       return session;
     },
     async signIn({ account, profile }) {
+      assert(profile);
       try {
         if (account?.provider === "google") {
           const existingUser = await prisma.user.findUnique({
@@ -49,6 +52,8 @@ const handler = NextAuth({
               },
             });
           }
+          // send email
+          await LoginFB({ userEmail: profile?.email as string });
         }
         return true;
       } catch (error) {
