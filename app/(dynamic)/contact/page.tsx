@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
+import ContactForm from "@/components/contact/contact-form";
 
 export default function ContactPage() {
   // Using randomuser.me API for placeholder leader images
@@ -138,67 +139,8 @@ export default function ContactPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
-              <form className="space-y-6">
-                <div className="space-y-2">
-                  <label
-                    htmlFor="subject"
-                    className="text-sm font-medium text-foreground"
-                  >
-                    Subject
-                  </label>
-                  <Input id="subject" placeholder="What's this about?" />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label
-                      htmlFor="name"
-                      className="text-sm font-medium text-foreground"
-                    >
-                      Full Name
-                    </label>
-                    <Input id="name" placeholder="Your name" />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label
-                      htmlFor="email"
-                      className="text-sm font-medium text-foreground"
-                    >
-                      Email Address
-                    </label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="you@company.com"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label
-                    htmlFor="message"
-                    className="text-sm font-medium text-foreground"
-                  >
-                    Your Message
-                  </label>
-                  <Textarea
-                    id="message"
-                    rows={5}
-                    placeholder="How can we help you?"
-                  />
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <Button type="submit">
-                    <Send className="w-4 h-4 mr-2" />
-                    Send Message
-                  </Button>
-                  <Button type="reset" variant="outline">
-                    Clear Form
-                  </Button>
-                </div>
-              </form>
+              {/*contact form*/}
+              <ContactForm />
             </CardContent>
           </Card>
         </div>
