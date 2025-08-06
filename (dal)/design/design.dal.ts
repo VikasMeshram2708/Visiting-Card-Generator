@@ -44,7 +44,7 @@ Corporate visiting card, ultra-detailed, 8k, studio lighting, minimalist, profes
 export async function createDesign(_: unknown, formData: FormData) {
   try {
     const session = await getServerSession();
-    console.log("session", session);
+    // console.log("session", session);
     if (!session) throw new Error("Unauthorized");
 
     // Rate limiting: 5 requests per minute per user
